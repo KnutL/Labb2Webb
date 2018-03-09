@@ -1,0 +1,16 @@
+.addaBook {
+  padding: 50px;
+  width: 200px;
+  float:right;
+
+}
+.Testbuttons {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
+hr {
+  position: absolute;
+  width:2000px;
+  text-align: center;
+}
