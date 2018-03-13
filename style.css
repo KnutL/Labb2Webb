@@ -2,7 +2,6 @@
   padding: 50px;
   width: 200px;
   float:right;
-
 }
 .Testbuttons {
   display: block;
@@ -11,6 +10,10 @@
 }
 hr {
   position: absolute;
-  width:2000px;
   text-align: center;
+}
+body {
+  background: linear-gradient(#FFB3F9,#FF5EF2);
+  background-repeat: no-repeat;
+  height: 740px;
 }

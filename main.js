@@ -1,6 +1,7 @@
 window.addEventListener('load', function(event)
 {
     const url = "https://www.forverkliga.se/JavaScript/api/crud.php?";
+    let numberOfTries = 0;
     let key = "";
     let statusDiv = document.getElementById('statusDiv');
     let addBookForm = document.getElementById('addBook')
@@ -17,19 +18,30 @@ window.addEventListener('load', function(event)
     // Funktion för att lägga till böcker
 
     function addBook(e){
-        e.preventDefault();
-        let bookTitle = document.getElementById('addBookTitle').value;
-        let bookAuthor = document.getElementById('addAuthor').value;
-        console.log(bookAuthor + bookTitle);
-        let request = new Request(url + 'op=insert&key=' + key + '&title=' + bookTitle + '&author=' + bookAuthor, { method: 'POST'});
-
-            fetch(request)
-            .then(response => response.json())
-            .then(data => statusDiv.innerText = data.status)
-            .catch(function (error){
-                console.log(error);
-            }
-        )}
+      e.preventDefault();
+      let bookTitle = document.getElementById('addBookTitle').value;
+      let bookAuthor = document.getElementById('addAuthor').value;
+      console.log(bookAuthor + bookTitle);
+      let request = new Request(url + 'op=insert&key=' + key + '&title=' + bookTitle + '&author=' + bookAuthor, { method: 'POST'});
+      fetch(request)
+      .then(response => response.json())
+      .then(function(data){
+          if(data.status === "success" && numberOfTries < 10){
+          operationFinished(data);
+      }
+      else if(data.status !== "success" && numberOfTries < 10){
+          numberOfTries++;
+          console.log(data.status + ": failed attempts " + numberOfTries + "/10");
+          return addBook(e);
+      }
+      else if(numberOfTries >= 10){
+          operationFailed(data);
+      }
+      })
+      .catch(function (error){
+          console.log(error);
+      }
+      )}
     // För att se alla böcker
     function fetchBooks(){
         let request = new Request(url + 'op=select&key=' + key);
@@ -70,4 +82,21 @@ window.addEventListener('load', function(event)
     function getLocalStorageKey(){
         console.log(localStorage);
     }
+
+    //When an operation finishes
+    function operationFinished(data){
+        numberOfTries++;
+        temp = numberOfTries;
+        numberOfTries = 0
+        return statusDiv.innerHTML = data.status + "</br>Operation finished after " + temp + " tries.";
+    }
+
+    //When an operation fails
+    function operationFailed(data){
+        temp = numberOfTries;
+        numberOfTries = 0;
+        console.log("connection failure " + data.status + ": reached maximum attempts: " + temp + "/10");
+        return statusDiv.innerHTML = data.status + "</br>Operation failed after " + temp + " tries.</br>" + data.message;
+    }
+
 });
